@@ -1,4 +1,5 @@
 import random
+import pygame
 from game.utils.constants import SCREEN_WIDTH, SCREEN_HEIGHT, LEFT, RIGTH
 
 class Enemy:
@@ -38,4 +39,42 @@ class Enemy:
             if self.index > self.INTERVAL or self.rect.x >= SCREEN_WIDTH - self.rect.width:
                 self.mov_x = LEFT
                 self.index = 0
- 
+
+class NewEnemy:
+    Y_POS = 0
+    SPEED_X = 7
+    SPEED_Y = 4
+    MOV_X = [LEFT, RIGTH]
+    INTERVAL = 120
+
+    def __init__(self, image, width, height):
+        self.image = image
+        self.image = pygame.transform.scale(self.image, (width, height))
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randint(image.get_width(), SCREEN_WIDTH - image.get_width())
+        self.rect.y = self.Y_POS
+        self.mov_x = random.choice(self.MOV_X)
+        self.index = 0
+        self.is_visible = True
+    
+    def update(self):
+        self.move()
+        if self.rect.y >= SCREEN_HEIGHT:
+            self.is_visible = False
+        self.index += 1
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+    
+    def move(self):
+        self.rect.y += self.SPEED_Y
+        if self.mov_x == LEFT:
+            self.rect.x -= self.SPEED_X
+            if self.index > self.INTERVAL or self.rect.x <= 0:
+                self.mov_x = RIGTH
+                self.index = 0
+        else:
+            self.rect.x += self.SPEED_X
+            if self.index > self.INTERVAL or self.rect.x >= SCREEN_WIDTH - self.rect.width:
+                self.mov_x = LEFT
+                self.index = 0
