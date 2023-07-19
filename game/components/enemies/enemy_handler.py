@@ -28,5 +28,5 @@ class EnemyHandler:
         self.enemies.remove(enemy)
 
     def reset(self):
-        self.reset.enemies = []
+        self.enemies = []  
         self.enemies_destroyed = 0

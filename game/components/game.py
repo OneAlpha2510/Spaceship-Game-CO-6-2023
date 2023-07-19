@@ -14,7 +14,7 @@ class Game:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
         self.playing = False
-        self. running = False
+        self.running = False
         self.game_speed = 20
         self.x_pos_bg = 0
         self.y_pos_bg = 0
@@ -22,10 +22,11 @@ class Game:
         self.enemy_handler = EnemyHandler()
         self.bullet_handler = BulletHandler()
         self.score = 0
+        self.max_score = 0
+        self.num_attempts = 0
 
     def run(self):
-    # Game loop: events - update - draw
-        self.running = True  # Asegurarse de que self.running se establezca en True
+        self.running = True
         while self.running:
             self.events()
             self.update()
@@ -39,12 +40,8 @@ class Game:
                 self.running = False
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
-                    self.player.can_shoot = True
-            elif event.type == pygame.KEYDOWN and not self.playing:
-                self.playing = True 
-
-        
-            
+                    if not self.playing:
+                        self.reset()
 
     def update(self):
         if self.playing:
@@ -55,9 +52,9 @@ class Game:
             self.score = self.enemy_handler.enemies_destroyed
             if not self.player.is_alive:
                 pygame.time.delay(300)
+                self.num_attempts += 1
+                self.max_score = max(self.max_score, self.score)
                 self.playing = False
-        
-            
 
     def draw(self):
         self.draw_background()
@@ -86,12 +83,19 @@ class Game:
         text, text_rect = text_utils.get_message('Press any Key to Start', 30, WHITE, 550, 300)
         self.screen.blit(text, text_rect)
 
+        if not self.player.is_alive:
+            max_score_text, max_score_rect = text_utils.get_message(f'Max Score: {self.max_score}', 20, WHITE, 550, 400)
+            attempts_text, attempts_rect = text_utils.get_message(f'Number of Attempts: {self.num_attempts}', 20, WHITE, 550, 450)
+            self.screen.blit(max_score_text, max_score_rect)
+            self.screen.blit(attempts_text, attempts_rect)
+
     def draw_score(self):
         score, score_rect = text_utils.get_message(f'Your score is: {self.score}', 20, WHITE, 1000, 40)
         self.screen.blit(score, score_rect)
-    
+
     def reset(self):
         self.player.reset()
         self.enemy_handler.reset()
         self.bullet_handler.reset()
         self.score = 0
+        self.playing = True
