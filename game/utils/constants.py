@@ -35,3 +35,4 @@ LEFT = "left"
 RIGTH = "right"
 
 BULLET_ENEMY_TYPE = "enemy"
+BULLET_SPACESHIP_TYPE = "player"

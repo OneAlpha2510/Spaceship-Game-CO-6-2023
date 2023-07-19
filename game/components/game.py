@@ -36,13 +36,13 @@ class Game:
                 self.playing = False
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
-                    self.player.is_firing = False
+                    self.player.can_shoot = True
 
     def update(self):
         user_input = pygame.key.get_pressed()
-        self.player.update(self.game_speed, user_input)
+        self.player.update(self.game_speed, user_input, self.bullet_handler)
         self.enemy_handler.update(self.bullet_handler)
-        self.bullet_handler.update(self.player)
+        self.bullet_handler.update(self.player, self.enemy_handler.enemies)
         if not self.player.is_alive:
             pygame.time.delay(300)
             self.playing = False

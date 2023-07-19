@@ -1,5 +1,5 @@
 import pygame
-from game.utils.constants import SPACESHIP, SCREEN_WIDTH, SCREEN_HEIGHT, BULLET
+from game.utils.constants import SPACESHIP, SCREEN_WIDTH, SCREEN_HEIGHT, BULLET_SPACESHIP_TYPE
 
 class Spaceship:
     WIDTH = 40
@@ -15,22 +15,29 @@ class Spaceship:
         self.rect.y = self.Y_POS
         self.is_alive = True
         self.is_firing = False
+        self.can_shoot = True
         self.fire_cooldown_timer = 0
-        self.projectiles = []
 
-    def update(self, game_speed, user_input):
+    def update(self, game_speed, user_input, bullet_handler):
         if user_input[pygame.K_LEFT]:
             self.move_left(game_speed)
-        
-        if user_input[pygame.K_RIGHT]:
+        elif user_input[pygame.K_RIGHT]:
             self.move_right(game_speed)
-        
-        if user_input[pygame.K_UP]:
+        elif user_input[pygame.K_UP]:
             self.move_up(game_speed)
-
-        if user_input[pygame.K_DOWN]:
+        elif user_input[pygame.K_DOWN]:
             self.move_down(game_speed)
+        if user_input[pygame.K_SPACE] and self.can_shoot:
+            self.shoot(bullet_handler)
+            self.fire_cooldown_timer = 20  # Establecer el tiempo de enfriamiento en un valor adecuado (puedes ajustarlo)
+            self.can_shoot = False  # Desactivar la capacidad de disparar hasta que pase el tiempo de enfriamiento
 
+        # Actualizar el tiempo de enfriamiento del disparo
+        if not self.can_shoot:
+            if self.fire_cooldown_timer > 0:
+                self.fire_cooldown_timer -= 1
+            else:
+                self.can_shoot = True
     def draw(self, screen):
         screen.blit(self.image, self.rect)
 
@@ -51,3 +58,7 @@ class Spaceship:
     def move_down(self, game_speed):
         if self.rect.bottom < SCREEN_HEIGHT:
             self.rect.y += game_speed
+
+    def shoot(self, bullet_handler):
+        bullet_handler.add_bullet(BULLET_SPACESHIP_TYPE, self.rect.center)
+
